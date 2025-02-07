@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <Description>BepInEx support library for Il2Cpp games</Description>
-        <TargetFramework>netstandard2.1</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
         <AssemblyTitle>BepInEx.IL2CPP</AssemblyTitle>
         <Product>BepInEx.IL2CPP</Product>
@@ -27,6 +27,7 @@
         <PackageReference Include="BepInEx.Il2Cpp.TlsAdapter" Version="1.0.1"/>
         <PackageReference Include="HarmonyX" Version="2.10.0"/>
         <PackageReference Include="Iced" Version="1.17.0"/>
+        <PackageReference Include="Il2CppInterop.Generator" Version="1.4.6-ci.426"/>
         <PackageReference Include="Il2CppAssemblyUnhollower.BaseLib" Version="0.4.33.3"/>
         <PackageReference Include="Il2CppAssemblyUnhollower.BaseLib.Legacy" Version="0.4.33.3"/>
         <PackageReference Include="Il2CppAssemblyUnhollower.Lib" Version="0.4.33.3"/>

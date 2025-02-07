@@ -13,10 +13,15 @@ using BepInEx.Logging;
 using Cpp2IL.Core;
 using HarmonyLib;
 using Il2CppDumper;
+using Il2CppInterop.Common;
+using Il2CppInterop.Generator;
+using Il2CppInterop.Generator.Runners;
 using LibCpp2IL;
+using Microsoft.Extensions.Logging;
 using Mono.Cecil;
 using UnhollowerBaseLib;
 using Logger = BepInEx.Logging.Logger;
+using LogLevel = BepInEx.Logging.LogLevel;
 
 namespace BepInEx.IL2CPP;
 
@@ -369,23 +374,23 @@ internal static class ProxyAssemblyGenerator
                 foreach (var assemblyDefinition in sourceAssemblies)
                     assemblyDefinition.Write(Path.Combine(dummyPath, assemblyDefinition.Name.Name + ".dll"));
             }
-
-            var unhollowerOptions = new UnhollowerOptions
+            
+            var opts = new GeneratorOptions
             {
                 GameAssemblyPath = GameAssemblyPath,
-                MscorlibPath = Path.Combine(Paths.ManagedPath, "mscorlib.dll"),
                 Source = sourceAssemblies,
                 OutputDir = Preloader.IL2CPPUnhollowedPath,
                 UnityBaseLibsDir = Directory.Exists(UnityBaseLibsDirectory) ? UnityBaseLibsDirectory : null,
-                NoCopyUnhollowerLibs = true,
-                ObfuscatedNamesRegex = !string.IsNullOrEmpty(ConfigUnhollowerDeobfuscationRegex.Value) ? new Regex(ConfigUnhollowerDeobfuscationRegex.Value) : null
+                ObfuscatedNamesRegex = !string.IsNullOrEmpty(ConfigUnhollowerDeobfuscationRegex.Value)
+                                           ? new Regex(ConfigUnhollowerDeobfuscationRegex.Value)
+                                           : null,
             };
 
             var renameMapLocation = Path.Combine(Paths.BepInExRootPath, "DeobfuscationMap.csv.gz");
             if (File.Exists(renameMapLocation))
             {
                 listener.DoPreloaderLog("Parsing deobfuscation rename mappings", LogLevel.Info);
-                unhollowerOptions.ReadRenameMap(renameMapLocation);
+                opts.ReadRenameMap(renameMapLocation);
             }
 
             listener.DoPreloaderLog("Executing Il2CppUnhollower generator", LogLevel.Info);
@@ -397,7 +402,7 @@ internal static class ProxyAssemblyGenerator
 
             try
             {
-                UnhollowedAssemblyGenerator.GenerateUnhollowedAssemblies(unhollowerOptions);
+                Il2CppInteropGenerator.Create(opts).AddInteropAssemblyGenerator().Run();
             }
             catch (Exception e)
             {
